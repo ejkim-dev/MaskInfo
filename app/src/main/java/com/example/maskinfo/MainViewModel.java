@@ -62,6 +62,8 @@ public class MainViewModel extends ViewModel {
                         .filter(item -> item.getRemainStat() != null)
                         .collect(Collectors.toList());
 
+                Log.d(TAG, "onResponse: "+items);
+
                 // 아래 코드는 비동기로 돌아가는 코드. 백그라운드에서 스래드로 동작함. 따라서 비동기에 안전한 코드(postValue())를 써야함
                 itemLiveData.postValue(items);
             }
