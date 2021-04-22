@@ -10,6 +10,7 @@ import com.example.maskinfo.model.StoreInfo;
 import com.example.maskinfo.repository.MaskService;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -41,9 +42,10 @@ public class MainViewModel extends ViewModel {
 
     // 호출을 해서 콜백을 받도록 함 - 'List<Store> items' 정보를 외부로 돌려주기 위해서!
     // livedate를 쓰면 관잘할 수 있기 때문에 콜백을 쓰지 않아도 됨
-    private void fetchStoreInfo(){
+    public void fetchStoreInfo(){
         // 통신 2. 실행하는 코드
-        storeInfoCall.enqueue(new Callback<StoreInfo>() {
+        /*ERR : Already executed (업데이트 시 발생)-> call객체에 .clon() 한번 하명 됨*/
+        storeInfoCall.clone().enqueue(new Callback<StoreInfo>() {
             /* 아래 코드가 데이터가 다 얻어진 시점 -> 이걸 다시 호출한쪽(fetchStoreInfo)으로
             돌려주기 위해서 인터페이스로 콜백 구현을 해야됐음, 이러면 코드가 복잡해짐.
             콜백을 쓰지 않기 위해서 "private List<Store> items = new ArrayList<>();" 여기에 라이브데이터를 넣을 예정
@@ -58,12 +60,13 @@ public class MainViewModel extends ViewModel {
 
                 // 아래 코드는 비동기로 돌아가는 코드. 백그라운드에서 스래드로 동작함. 따라서 비동기에 안전한 코드(postValue())를 써야함
                 itemLiveData.postValue(items);
-
             }
 
             @Override
             public void onFailure(Call<StoreInfo> call, Throwable t) {
                 Log.e(TAG, "onFailure: ", t);
+                // 에러가 났을 때 빈 걸 세팅해주는 코드
+                itemLiveData.postValue(Collections.emptyList());
             }
         });
     };

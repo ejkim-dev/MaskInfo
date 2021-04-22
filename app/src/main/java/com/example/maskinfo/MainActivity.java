@@ -13,6 +13,8 @@ import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.lifecycle.Observer;
+import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -46,42 +48,17 @@ public class MainActivity extends AppCompatActivity {
         final StoreAdapter adapter = new StoreAdapter();
         recyclerView.setAdapter(adapter);
 
-        // 통신 1. 준비하는 코드
-        Retrofit retrofit = new Retrofit.Builder()
-                .baseUrl(MaskService.BASE_URL)
-                .addConverterFactory(MoshiConverterFactory.create())
-                .build();
+        // 뷰모델을 사용하도록 코드 작성청
+        MainViewModel viewModel = new ViewModelProvider(this).get(MainViewModel.class);
 
-        MaskService service = retrofit.create(MaskService.class);
-
-        // 데이터를 받아올 준비를 함
-        Call<StoreInfo> storeInfoCall = service.fetchStoreInfo();
-
-        // execute()는 백그라운드가 아니라 동기 방식으로 처리되는 것이기 때문에
-        // 네트워크 처리에 사용할 수 없다. (네트워크는 백그라운드에서 처리하도록 안드에서 강제해놓음)
-
-        // 통신 2. 실행하는 코드
-        storeInfoCall.enqueue(new Callback<StoreInfo>() {
-            @Override
-            public void onResponse(Call<StoreInfo> call, Response<StoreInfo> response) {
-                Log.d(TAG, "onResponse: refresh");
-                List<Store> items = response.body().getStores();
-
-                //null을 뺌
-                adapter.updateItems(items
-                        .stream()
-                        .filter(item -> item.getRemainStat() != null)
-                        .collect(Collectors.toList()));
-                getSupportActionBar().setTitle("마스크 재고 있는 곳: "+ items.size()+"곳");
-            }
-
-            @Override
-            public void onFailure(Call<StoreInfo> call, Throwable t) {
-                Log.e(TAG, "onFailure: ", t);
-            }
+        //UI 변경 감지 해서 업데이트
+        viewModel.itemLiveData.observe(this, stores -> {
+            adapter.updateItems(stores);
+            getSupportActionBar().setTitle("마스크 재고 있는 곳: " + stores.size()+"곳");
         });
 
-
+        // 데이터 요청
+        viewModel.fetchStoreInfo();
     }
 
     @Override
