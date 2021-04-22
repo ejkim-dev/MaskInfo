@@ -36,6 +36,8 @@ public class MainActivity extends AppCompatActivity {
 
     private static final String TAG = MainActivity.class.getSimpleName();
 
+    private MainViewModel viewModel;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -49,7 +51,7 @@ public class MainActivity extends AppCompatActivity {
         recyclerView.setAdapter(adapter);
 
         // 뷰모델을 사용하도록 코드 작성청
-        MainViewModel viewModel = new ViewModelProvider(this).get(MainViewModel.class);
+        viewModel = new ViewModelProvider(this).get(MainViewModel.class);
 
         //UI 변경 감지 해서 업데이트
         viewModel.itemLiveData.observe(this, stores -> {
@@ -72,6 +74,7 @@ public class MainActivity extends AppCompatActivity {
         switch (item.getItemId()) {
             case R.id.action_refrash:
                 //refresh
+                viewModel.fetchStoreInfo();
                 return true;
             default:
                 return super.onOptionsItemSelected(item);
