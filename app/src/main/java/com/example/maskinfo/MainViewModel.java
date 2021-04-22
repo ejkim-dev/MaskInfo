@@ -51,17 +51,14 @@ public class MainViewModel extends ViewModel {
             @Override
             public void onResponse(Call<StoreInfo> call, Response<StoreInfo> response) {
                 Log.d(TAG, "onResponse: refresh");
-                List<Store> items = response.body().getStores();
-
-
-
-                // 아래 데이터가 우리가 원하는 필터링한 데이터
-                //null을 뺌
-                adapter.updateItems(items
+                List<Store> items = response.body().getStores()
                         .stream()
                         .filter(item -> item.getRemainStat() != null)
-                        .collect(Collectors.toList()));
-                getSupportActionBar().setTitle("마스크 재고 있는 곳: "+ items.size()+"곳");
+                        .collect(Collectors.toList());
+
+                // 아래 코드는 비동기로 돌아가는 코드. 백그라운드에서 스래드로 동작함. 따라서 비동기에 안전한 코드(postValue())를 써야함
+                itemLiveData.postValue(items);
+
             }
 
             @Override
