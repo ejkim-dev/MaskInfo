@@ -2,6 +2,7 @@ package com.example.maskinfo;
 
 import android.util.Log;
 
+import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.ViewModel;
 
 import com.example.maskinfo.model.Store;
@@ -22,7 +23,10 @@ import retrofit2.converter.moshi.MoshiConverterFactory;
 public class MainViewModel extends ViewModel {
     private static final String TAG = MainViewModel.class.getSimpleName();
 
-    private List<Store> items = new ArrayList<>();
+    // MutableLiveData : 변경이 가능한 라이브데이터가 됨
+    // 외부에서 'fetchStoreInfo()'를 호출하면 'items'의 값만 변경되게 한다.
+    // 원래 getter setter로 하는게 맞는데 일단 'public'으로 열어놓음
+    public MutableLiveData<List<Store>> itemLiveData = new MutableLiveData<>();
 
     // 통신 1. 준비하는 코드
     private Retrofit retrofit = new Retrofit.Builder()
@@ -41,13 +45,17 @@ public class MainViewModel extends ViewModel {
         // 통신 2. 실행하는 코드
         storeInfoCall.enqueue(new Callback<StoreInfo>() {
             /* 아래 코드가 데이터가 다 얻어진 시점 -> 이걸 다시 호출한쪽(fetchStoreInfo)으로
-            돌려주기 위해서 인터페이스로 콜백 구현을 해야됐음
-            콜백을 쓰지 않기 위해서 "private List<Store> items = new ArrayList<>();" 여기에 라이브데이터를 넣을 예정*/
+            돌려주기 위해서 인터페이스로 콜백 구현을 해야됐음, 이러면 코드가 복잡해짐.
+            콜백을 쓰지 않기 위해서 "private List<Store> items = new ArrayList<>();" 여기에 라이브데이터를 넣을 예정
+            라이브 데이터를 넣으면 걔를 변경하는 것에서 끝낼 수 있음 -> 엑티비티 쪽에서는 이걸 관찰하고 있다가 변경점만 캐치하면 됨*/
             @Override
             public void onResponse(Call<StoreInfo> call, Response<StoreInfo> response) {
                 Log.d(TAG, "onResponse: refresh");
                 List<Store> items = response.body().getStores();
 
+
+
+                // 아래 데이터가 우리가 원하는 필터링한 데이터
                 //null을 뺌
                 adapter.updateItems(items
                         .stream()
