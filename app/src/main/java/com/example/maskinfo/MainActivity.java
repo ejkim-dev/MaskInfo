@@ -46,6 +46,7 @@ public class MainActivity extends AppCompatActivity {
         final StoreAdapter adapter = new StoreAdapter();
         recyclerView.setAdapter(adapter);
 
+        // 통신 1. 준비하는 코드
         Retrofit retrofit = new Retrofit.Builder()
                 .baseUrl(MaskService.BASE_URL)
                 .addConverterFactory(MoshiConverterFactory.create())
@@ -59,6 +60,7 @@ public class MainActivity extends AppCompatActivity {
         // execute()는 백그라운드가 아니라 동기 방식으로 처리되는 것이기 때문에
         // 네트워크 처리에 사용할 수 없다. (네트워크는 백그라운드에서 처리하도록 안드에서 강제해놓음)
 
+        // 통신 2. 실행하는 코드
         storeInfoCall.enqueue(new Callback<StoreInfo>() {
             @Override
             public void onResponse(Call<StoreInfo> call, Response<StoreInfo> response) {
