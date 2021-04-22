@@ -57,8 +57,6 @@ public class MainActivity extends AppCompatActivity {
             getSupportActionBar().setTitle("마스크 재고 있는 곳: " + stores.size()+"곳");
         });
 
-        // 데이터 요청
-        viewModel.fetchStoreInfo();
     }
 
     @Override

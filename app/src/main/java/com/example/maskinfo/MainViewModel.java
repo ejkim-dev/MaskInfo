@@ -40,6 +40,10 @@ public class MainViewModel extends ViewModel {
     // 데이터를 받아올 준비를 함
     private Call<StoreInfo> storeInfoCall = service.fetchStoreInfo();
 
+    public MainViewModel() {
+        fetchStoreInfo();
+    }
+
     // 호출을 해서 콜백을 받도록 함 - 'List<Store> items' 정보를 외부로 돌려주기 위해서!
     // livedate를 쓰면 관잘할 수 있기 때문에 콜백을 쓰지 않아도 됨
     public void fetchStoreInfo(){
