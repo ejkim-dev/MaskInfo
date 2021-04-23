@@ -63,6 +63,7 @@ public class MainViewModel extends ViewModel {
                         .stream()
                         .filter(item -> item.getRemainStat() != null)
                         .filter(item -> !item.getRemainStat().equals("empty"))
+//                        .sorted() // 로 정렬해도 되지만 순수 자바에서 정렬하겠
                         .collect(Collectors.toList());
 
                 for (Store store : items){
@@ -70,6 +71,9 @@ public class MainViewModel extends ViewModel {
                     store.setDistance(distance);
                 }
                 Log.d(TAG, "onResponse: "+items);
+
+                // 이렇게 하면 distance로 정렬이 가능한 객체가 됨
+                Collections.sort(items);
 
                 // 아래 코드는 비동기로 돌아가는 코드. 백그라운드에서 스래드로 동작함. 따라서 비동기에 안전한 코드(postValue())를 써야함
                 itemLiveData.postValue(items);

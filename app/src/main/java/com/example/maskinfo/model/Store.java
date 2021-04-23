@@ -2,8 +2,8 @@
 package com.example.maskinfo.model;
 
 import com.squareup.moshi.Json;
-
-public class Store {
+// Comparable -> 비교하는 규칙을 재정의 할 수 있음
+public class Store implements Comparable<Store>{
 
     @Json(name = "addr")
     private String addr;
@@ -106,4 +106,9 @@ public class Store {
         this.type = type;
     }
 
+    @Override
+    public int compareTo(Store o) {
+        // 비교를 해서 내가 더 크면 양수, 작으면 음수, 같으면 0을 리턴
+        return Double.compare(distance, o.distance);
+    }
 }
