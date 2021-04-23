@@ -51,4 +51,10 @@ dependencies {
     implementation "androidx.lifecycle:lifecycle-viewmodel-ktx:$lifecycle_version"
     // LiveData
     implementation "androidx.lifecycle:lifecycle-livedata-ktx:$lifecycle_version"
+
+    // 위치정보
+    implementation 'com.google.android.gms:play-services-location:18.0.0'
+
+    // 권한 체크
+    implementation 'gun0912.ted:tedpermission:2.2.3'
 }

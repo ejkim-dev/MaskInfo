@@ -1,5 +1,6 @@
 package com.example.maskinfo;
 
+import android.location.Location;
 import android.util.Log;
 
 import androidx.lifecycle.MutableLiveData;
@@ -28,6 +29,7 @@ public class MainViewModel extends ViewModel {
     // 외부에서 'fetchStoreInfo()'를 호출하면 'items'의 값만 변경되게 한다.
     // 원래 getter setter로 하는게 맞는데 일단 'public'으로 열어놓음
     public MutableLiveData<List<Store>> itemLiveData = new MutableLiveData<>();
+    public Location location;
 
     // 통신 1. 준비하는 코드
     private Retrofit retrofit = new Retrofit.Builder()
@@ -38,18 +40,18 @@ public class MainViewModel extends ViewModel {
     private MaskService service = retrofit.create(MaskService.class);
 
     // 데이터를 받아올 준비를 함
-    private Call<StoreInfo> storeInfoCall = service.fetchStoreInfo();
+//    private Call<StoreInfo> storeInfoCall = service.fetchStoreInfo();
 
-    public MainViewModel() {
-        fetchStoreInfo();
-    }
+//    public MainViewModel() {
+//        fetchStoreInfo();
+//    }
 
     // 호출을 해서 콜백을 받도록 함 - 'List<Store> items' 정보를 외부로 돌려주기 위해서!
     // livedate를 쓰면 관잘할 수 있기 때문에 콜백을 쓰지 않아도 됨
     public void fetchStoreInfo(){
         // 통신 2. 실행하는 코드
         /*ERR : Already executed (업데이트 시 발생)-> call객체에 .clon() 한번 하명 됨*/
-        storeInfoCall.clone().enqueue(new Callback<StoreInfo>() {
+        service.fetchStoreInfo(location.getLatitude(), location.getLongitude()).clone().enqueue(new Callback<StoreInfo>() {
             /* 아래 코드가 데이터가 다 얻어진 시점 -> 이걸 다시 호출한쪽(fetchStoreInfo)으로
             돌려주기 위해서 인터페이스로 콜백 구현을 해야됐음, 이러면 코드가 복잡해짐.
             콜백을 쓰지 않기 위해서 "private List<Store> items = new ArrayList<>();" 여기에 라이브데이터를 넣을 예정
