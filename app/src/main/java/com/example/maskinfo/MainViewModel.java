@@ -29,6 +29,8 @@ public class MainViewModel extends ViewModel {
     // 외부에서 'fetchStoreInfo()'를 호출하면 'items'의 값만 변경되게 한다.
     // 원래 getter setter로 하는게 맞는데 일단 'public'으로 열어놓음
     public MutableLiveData<List<Store>> itemLiveData = new MutableLiveData<>();
+    public MutableLiveData<Boolean> loadingLiveData = new MutableLiveData();
+
     public Location location;
 
     // 통신 1. 준비하는 코드
@@ -49,6 +51,9 @@ public class MainViewModel extends ViewModel {
     // 호출을 해서 콜백을 받도록 함 - 'List<Store> items' 정보를 외부로 돌려주기 위해서!
     // livedate를 쓰면 관잘할 수 있기 때문에 콜백을 쓰지 않아도 됨
     public void fetchStoreInfo(){
+        // 로딩 시작
+        loadingLiveData.setValue(true);
+
         // 통신 2. 실행하는 코드
         /*ERR : Already executed (업데이트 시 발생)-> call객체에 .clon() 한번 하명 됨*/
         service.fetchStoreInfo(location.getLatitude(), location.getLongitude()).clone().enqueue(new Callback<StoreInfo>() {
@@ -77,6 +82,9 @@ public class MainViewModel extends ViewModel {
 
                 // 아래 코드는 비동기로 돌아가는 코드. 백그라운드에서 스래드로 동작함. 따라서 비동기에 안전한 코드(postValue())를 써야함
                 itemLiveData.postValue(items);
+
+                // 로딩 끝
+                loadingLiveData.postValue(false);
             }
 
             @Override
@@ -84,6 +92,10 @@ public class MainViewModel extends ViewModel {
                 Log.e(TAG, "onFailure: ", t);
                 // 에러가 났을 때 빈 걸 세팅해주는 코드
                 itemLiveData.postValue(Collections.emptyList());
+
+                // 로딩 끝
+                loadingLiveData.postValue(false);
+
             }
         });
     };
